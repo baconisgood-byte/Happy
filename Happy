@@ -57,7 +57,7 @@ local function startFly()
     if flying then return end
     flying = true
     flyBtn.Text = "Fly: ON"
-    
+
     bodyGyro = Instance.new("BodyGyro", rootPart)
     bodyGyro.P = 9e4
     bodyGyro.MaxTorque = Vector3.new(9e4, 9e4, 9e4)
@@ -81,8 +81,9 @@ local function startFly()
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then
             moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
         end
-        moveDirection = moveDirection.Unit
+
         if moveDirection.Magnitude > 0 then
+            moveDirection = moveDirection.Unit
             bodyVelocity.Velocity = moveDirection * flySpeed
             bodyGyro.CFrame = workspace.CurrentCamera.CFrame
         else
@@ -91,4 +92,25 @@ local function startFly()
     end)
 end
 
-local
+local function stopFly()
+    if not flying then return end
+    flying = false
+    flyBtn.Text = "Fly: OFF"
+    RunService:UnbindFromRenderStep("FlyControl")
+    if bodyGyro then
+        bodyGyro:Destroy()
+        bodyGyro = nil
+    end
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+end
+
+flyBtn.MouseButton1Click:Connect(function()
+    if flying then
+        stopFly()
+    else
+        startFly()
+    end
+end)
